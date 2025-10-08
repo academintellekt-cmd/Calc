@@ -72,10 +72,66 @@
   }
   .equip-table .field, .category-header .field { align-self: flex-start; }
 
+  /* Toggle switch styles */
+  .toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 24px;
+    margin-right: 8px;
+  }
+  .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #2c3e50;
+    transition: .3s;
+    border-radius: 24px;
+    border: 1px solid var(--border);
+  }
+  .toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #aab0b9;
+    transition: .3s;
+    border-radius: 50%;
+  }
+  input:checked + .toggle-slider {
+    background: linear-gradient(135deg, var(--accent), #2e86de);
+  }
+  input:checked + .toggle-slider:before {
+    transform: translateX(24px);
+    background-color: white;
+  }
+  .equip-section.disabled {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+  .equip-section.disabled .category-header {
+    pointer-events: all;
+  }
+  .section-toggle-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
   @media print{
     body{background:white;color:black}
     .card{box-shadow:none;border-color:#ccc}
-    button,.toolbar{display:none!important}
+    button,.toolbar,.toggle-switch{display:none!important}
     .sticky-summary{position:static}
     .input, select, textarea{border-color:#bbb}
     a{color:black;text-decoration:none}
@@ -405,12 +461,21 @@
   const toNum=v=>{const n=parseFloat(v);return isFinite(n)?n:0}
   function autoresizeTA(ta){ta.style.height='auto';ta.style.height=ta.scrollHeight+'px'}
 
-  function createSection(container, data={title:'', items:[{name:'',desc:'',qty:'',price:''}]}){
+  function createSection(container, data={title:'', items:[{name:'',desc:'',qty:'',price:''}], enabled:true}){
     const wrap=document.createElement('div');
     wrap.className='equip-section';
     wrap.style.marginBottom='18px';
+    wrap.setAttribute('data-enabled', data.enabled !== false ? 'true' : 'false');
+    if (data.enabled === false) wrap.classList.add('disabled');
+    
     wrap.innerHTML=`
       <div class="category-header">
+        <div class="section-toggle-wrap">
+          <label class="toggle-switch">
+            <input type="checkbox" class="section-toggle" ${data.enabled !== false ? 'checked' : ''}>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
         <div class="row" style="flex:1">
           <div class="field" style="flex:1 1 auto;min-width:220px">
             <label data-i18n="section_name">${STR[els.langSel.value||'ru'].section_name}</label>
@@ -446,6 +511,19 @@
     st.value = data.title||'';
     st.addEventListener('input', ()=>autoresizeTA(st));
     autoresizeTA(st);
+
+    // Toggle handler
+    const toggleInput = $('.section-toggle', wrap);
+    toggleInput.addEventListener('change', (e)=>{
+      const isEnabled = e.target.checked;
+      wrap.setAttribute('data-enabled', isEnabled ? 'true' : 'false');
+      if (isEnabled) {
+        wrap.classList.remove('disabled');
+      } else {
+        wrap.classList.add('disabled');
+      }
+      recalc();
+    });
 
     function addItem(it={name:'',desc:'',qty:'',price:''}){
       const tr=document.createElement('tr');
@@ -495,7 +573,8 @@
   function serializeSections(container){
     return $$('.equip-section',container).map(sec=>{
       const items=$$('tbody tr',sec).map(tr=>({name:$('.name',tr).value.trim(),desc:$('.desc',tr).value.trim(),qty:toNum($('.qty',tr).value),price:toNum($('.price',tr).value)}));
-      return{title:$('.sec-title',sec).value.trim(),items};
+      const enabled = sec.getAttribute('data-enabled') === 'true';
+      return{title:$('.sec-title',sec).value.trim(),items,enabled};
     });
   }
 
@@ -505,6 +584,8 @@
       let total=0;
       $$('.equip-section',container).forEach(sec=>{
         let secTotal=0;
+        const isEnabled = sec.getAttribute('data-enabled') === 'true';
+        
         $$('tbody tr',sec).forEach(tr=>{
           const qty=toNum($('.qty',tr).value);
           const price=toNum($('.price',tr).value);
@@ -514,7 +595,11 @@
         });
         $('[data-role="sec-total"]',sec).textContent=money(secTotal);
         $('.sec-total-foot',sec).textContent=money(secTotal);
-        total+=secTotal;
+        
+        // Only add to total if section is enabled
+        if (isEnabled) {
+          total+=secTotal;
+        }
       });
       return total;
     }
