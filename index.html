@@ -23,37 +23,38 @@
   .grid{display:grid;grid-template-columns:1fr;gap:16px;}
   @media (min-width:1080px){.grid{grid-template-columns:2fr 1fr;}}
   .card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,.35);}
-  .card .head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:space-between}
-  .card .body{padding:16px 20px}
-  .title{font-weight:700;font-size:18px;letter-spacing:.2px;}
+  .card .head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:space-between}
+  .card .body{padding:12px 16px}
+  .title{font-weight:700;font-size:17px;letter-spacing:.2px;}
   .muted{color:var(--muted)}
-  .row{display:flex;gap:12px;flex-wrap:wrap}
-  .row>.field{flex:1 1 160px}
-  .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;}
-  .input, select, textarea{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:#0b0e13;color:var(--text);outline:none;}
-  .input:focus, select:focus, textarea:focus{border-color:#3a88c8;box-shadow:0 0 0 3px rgba(58,136,200,.15);}
-  textarea{resize:vertical;min-height:38px}
-  button{appearance:none;border:1px solid var(--border);background:var(--secondary);color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:600}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row>.field{flex:1 1 140px}
+  .field label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px;}
+  .input, select, textarea{width:100%;padding:7px 10px;border-radius:8px;border:1px solid var(--border);background:#0b0e13;color:var(--text);outline:none;font-size:13px;}
+  .input:focus, select:focus, textarea:focus{border-color:#3a88c8;box-shadow:0 0 0 2px rgba(58,136,200,.12);}
+  textarea{resize:vertical;min-height:32px}
+  button{appearance:none;border:1px solid var(--border);background:var(--secondary);color:var(--text);padding:6px 10px;border-radius:8px;cursor:pointer;font-weight:600;font-size:12px}
   button:hover{filter:brightness(1.08)}
   .btn-secondary{background:var(--secondary)}
   .btn-danger{background:linear-gradient(135deg,var(--danger),#ff6b81);border-color:transparent;color:#12070a}
-  .toolbar{display:flex;gap:8px;flex-wrap:wrap}
+  .toolbar{display:flex;gap:6px;flex-wrap:wrap}
   table{width:100%;border-collapse:collapse;table-layout:auto}
-  th, td{border-bottom:1px solid var(--border);padding:8px;vertical-align:top;text-align:left;}
-  thead th{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.6px}
-  tfoot td{font-weight:700}
+  th, td{border-bottom:1px solid var(--border);padding:6px 8px;vertical-align:middle;text-align:left;}
+  thead th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:8px}
+  tfoot td{font-weight:700;padding:8px}
   .right{text-align:right}.center{text-align:center}.nowrap{white-space:nowrap}
-  .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#0b0e13;border:1px solid var(--border);color:var(--muted);font-size:12px}
-  .divider{height:1px;background:var(--border);margin:16px 0}
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;background:#0b0e13;border:1px solid var(--border);color:var(--muted);font-size:11px}
+  .divider{height:1px;background:var(--border);margin:12px 0}
   .sticky-summary{position:sticky;top:16px}
-  .total-box{background:linear-gradient(135deg,#0b0e13,#0e151d);border:1px solid var(--border);padding:12px 14px;border-radius:12px;margin-top:8px}
-  .total-box .line{display:flex;justify-content:space-between;margin:8px 0}
+  .total-box{background:linear-gradient(135deg,#0b0e13,#0e151d);border:1px solid var(--border);padding:10px 12px;border-radius:12px;margin-top:8px}
+  .total-box .line{display:flex;justify-content:space-between;margin:6px 0;font-size:13px}
   .total-box .line span:first-child{color:var(--muted)}
-  .grand{font-size:18px;font-weight:800}
-  .category-header{display:flex;align-items:center;gap:8px;justify-content:space-between;margin:6px 0 8px}
+  .grand{font-size:17px;font-weight:800}
+  .category-header{display:flex;align-items:center;gap:8px;justify-content:space-between;margin:4px 0 6px}
   .del{background:transparent;border-color:var(--danger);color:#ff6b81}
-  .hint{font-size:12px;color:var(--muted)}
-  .row-actions button{padding:6px 10px;font-weight:600}
+  .hint{font-size:11px;color:var(--muted)}
+  .row-actions{display:flex;gap:4px;justify-content:center}
+  .row-actions button{padding:5px 8px;font-weight:500;min-width:32px;font-size:18px;line-height:1}
   .lang-switch{display:flex;gap:6px;align-items:center}
   .lang-switch select{background:#0b0e13;border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px 10px}
 
@@ -71,6 +72,7 @@
     line-height:1.2;
   }
   .equip-table .field, .category-header .field { align-self: flex-start; }
+  .equip-section { margin-bottom: 12px !important; }
 
   /* Toggle switch styles */
   .toggle-switch {
@@ -464,7 +466,7 @@
   function createSection(container, data={title:'', items:[{name:'',desc:'',qty:'',price:''}], enabled:true}){
     const wrap=document.createElement('div');
     wrap.className='equip-section';
-    wrap.style.marginBottom='18px';
+    wrap.style.marginBottom='12px';
     wrap.setAttribute('data-enabled', data.enabled !== false ? 'true' : 'false');
     if (data.enabled === false) wrap.classList.add('disabled');
     
@@ -492,12 +494,12 @@
       </div>
       <table class="equip-table">
         <thead><tr>
-          <th style="width:28%" data-i18n="name_col">${STR[els.langSel.value||'ru'].name_col}</th>
+          <th style="width:26%" data-i18n="name_col">${STR[els.langSel.value||'ru'].name_col}</th>
           <th data-i18n="desc_col">${STR[els.langSel.value||'ru'].desc_col}</th>
-          <th class="right nowrap" style="width:10%" data-i18n="qty_col">${STR[els.langSel.value||'ru'].qty_col}</th>
-          <th class="right nowrap" style="width:16%" data-i18n="price_col">${STR[els.langSel.value||'ru'].price_col}</th>
-          <th class="right nowrap" style="width:16%" data-i18n="sum">${STR[els.langSel.value||'ru'].sum}</th>
-          <th class="center" style="width:12%" data-i18n="actions">${STR[els.langSel.value||'ru'].actions}</th>
+          <th class="right nowrap" style="width:9%" data-i18n="qty_col">${STR[els.langSel.value||'ru'].qty_col}</th>
+          <th class="right nowrap" style="width:14%" data-i18n="price_col">${STR[els.langSel.value||'ru'].price_col}</th>
+          <th class="right nowrap" style="width:14%" data-i18n="sum">${STR[els.langSel.value||'ru'].sum}</th>
+          <th class="center" style="width:80px" data-i18n="actions">${STR[els.langSel.value||'ru'].actions}</th>
         </tr></thead>
         <tbody></tbody>
         <tfoot><tr><td colspan="4" class="right" data-i18n="section_total">${STR[els.langSel.value||'ru'].section_total}:</td><td class="right sec-total-foot">$0</td><td></td></tr></tfoot>
@@ -534,8 +536,8 @@
         <td class="right"><input class="input price" type="number" min="0" step="0.01"></td>
         <td class="right subtotal">—</td>
         <td class="center row-actions">
-          <button class="btn-secondary dup" data-i18n="duplicate">${STR[els.langSel.value||'ru'].duplicate}</button>
-          <button class="del remove" data-i18n="remove">${STR[els.langSel.value||'ru'].remove}</button>
+          <button class="btn-secondary dup" title="${STR[els.langSel.value||'ru'].duplicate}">⊕</button>
+          <button class="del remove" title="${STR[els.langSel.value||'ru'].remove}">✕</button>
         </td>`;
       tbody.appendChild(tr);
       $('.name',tr).value=it.name||'';
