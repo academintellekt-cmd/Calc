@@ -694,41 +694,64 @@
     }
   })();
 
-  // Default prefilled data - English version (USD)
-  const DEFAULT_DATA_EN = {"meta":{"lang":"en","projectName":"USA-Miami","currency":"$","taxPercent":10,"contingencyPercent":5,"version":6},"construction":[{"title":"Preparation & Demolition","items":[{"name":"Preparatory works, protection & debris removal","desc":"","qty":1,"price":11},{"name":"Demolition of partitions, finishes, floors, ceilings","desc":"","qty":2,"price":22},{"name":"Demolition of MEP (cables, pipes, equipment)","desc":"","qty":1,"price":22}]},{"title":"Partitions & Walls","items":[{"name":"Framing & metal studs","desc":"","qty":2,"price":222},{"name":"Acoustic / thermal insulation","desc":"","qty":22,"price":22},{"name":"Drywall sheathing (1–2 layers)","desc":"","qty":1,"price":1},{"name":"Plastering, skim coat, priming","desc":"","qty":1,"price":1},{"name":"Finish (wallpaper / paint / panels)","desc":"","qty":1,"price":1}]},{"title":"Ceilings","items":[{"name":"Suspended ceilings (drywall / grid / grilyato)","desc":"","qty":1,"price":11},{"name":"Stretch ceilings","desc":"","qty":2,"price":2},{"name":"Skim coat & painting","desc":"","qty":2,"price":2}]},{"title":"Floors","items":[{"name":"Screed & leveling","desc":"","qty":2,"price":2},{"name":"Waterproofing & sound insulation","desc":"","qty":2,"price":0},{"name":"Finish flooring (tile, laminate, vinyl, carpet, etc.)","desc":"","qty":2,"price":2},{"name":"Baseboards & thresholds","desc":"","qty":2,"price":2}]},{"title":"Openings, Doors, Windows","items":[{"name":"Openings cutting & reinforcement","desc":"","qty":1,"price":1221},{"name":"Door blocks installation","desc":"","qty":2,"price":11212},{"name":"Window blocks & jambs installation","desc":"","qty":1221,"price":12}]},{"title":"Restrooms & Plumbing","items":[{"name":"Water supply & drainage rough-in","desc":"","qty":2,"price":2},{"name":"Plumbing fixtures installation (toilets, sinks, showers)","desc":"","qty":2,"price":2},{"name":"Tiling (walls/floor)","desc":"","qty":0,"price":22}]},{"title":"Electrical","items":[{"name":"Cable trays & rough-in","desc":"","qty":12,"price":212},{"name":"Panelboard, breakers, low-voltage","desc":"","qty":12,"price":12},{"name":"Outlets, switches, lighting points","desc":"","qty":12,"price":1212},{"name":"Light fixtures installation","desc":"","qty":12,"price":12}]},{"title":"HVAC","items":[{"name":"Ductwork & grilles","desc":"","qty":12,"price":12},{"name":"AC / ventilation units installation","desc":"","qty":0,"price":12},{"name":"Commissioning","desc":"","qty":21,"price":12}]},{"title":"Closeout","items":[{"name":"Final cleaning","desc":"","qty":12,"price":12},{"name":"QA/QC and handover","desc":"","qty":21,"price":2}]}],"equipment_fitout":[{"title":"from Russia","items":[{"name":"Fee","desc":"","qty":1,"price":11000},{"name":"Floor","desc":"46,08","qty":1,"price":27340},{"name":"Lizer room","desc":"78","qty":1,"price":15700},{"name":"Ttargets","desc":"33","qty":1,"price":9380},{"name":"Bsketball","desc":"4","qty":1,"price":10150},{"name":"Climbing Game","desc":"12","qty":1,"price":10532},{"name":"Graber","desc":"","qty":1,"price":800},{"name":"XOX","desc":"","qty":1,"price":1900},{"name":"Tap Wall","desc":"","qty":1,"price":1700},{"name":"Tap Table","desc":"","qty":1,"price":1800},{"name":"Stop Time","desc":"","qty":1,"price":400},{"name":"Frezzbe","desc":"","qty":1,"price":1600},{"name":"Balls Darts","desc":"","qty":1,"price":2000}]}],"equipment_furniture":[{"title":"","items":[{"name":"Reseprion","desc":"","qty":1,"price":2000},{"name":"Table","desc":"","qty":1,"price":500}]}],"equipment_tech":[{"title":"","items":[{"name":"Computer","desc":"","qty":1,"price":500}]}],"equipment_extra":[{"title":"","items":[{"name":"Fire System","desc":"","qty":10,"price":2000}]}],"equipment_delivery":[{"title":"","items":[{"name":"","desc":"","qty":0,"price":0}]}]};
-
-  // Default prefilled data - Russian version (RUB)
-  const DEFAULT_DATA_RU = {"meta":{"lang":"ru","projectName":"Парк Москва","currency":"₽","taxPercent":20,"contingencyPercent":10,"version":6},"construction":[{"title":"Подготовка и демонтаж","items":[{"name":"Подготовительные работы, защита и вывоз мусора","desc":"","qty":1,"price":1000},{"name":"Демонтаж перегородок, отделки, полов, потолков","desc":"","qty":2,"price":2000},{"name":"Демонтаж инженерных систем (кабели, трубы, оборудование)","desc":"","qty":1,"price":2000}]},{"title":"Перегородки и стены","items":[{"name":"Каркас и металлические профили","desc":"","qty":2,"price":20000},{"name":"Акустическая / теплоизоляция","desc":"","qty":22,"price":2000},{"name":"Обшивка гипсокартоном (1–2 слоя)","desc":"","qty":1,"price":100},{"name":"Штукатурка, шпаклевка, грунтовка","desc":"","qty":1,"price":100},{"name":"Финишная отделка (обои / покраска / панели)","desc":"","qty":1,"price":100}]},{"title":"Потолки","items":[{"name":"Подвесные потолки (гипсокартон / грильято)","desc":"","qty":1,"price":1000},{"name":"Натяжные потолки","desc":"","qty":2,"price":200},{"name":"Шпаклевка и покраска","desc":"","qty":2,"price":200}]},{"title":"Полы","items":[{"name":"Стяжка и выравнивание","desc":"","qty":2,"price":200},{"name":"Гидроизоляция и звукоизоляция","desc":"","qty":2,"price":0},{"name":"Финишное покрытие (плитка, ламинат, винил, ковролин)","desc":"","qty":2,"price":200},{"name":"Плинтусы и пороги","desc":"","qty":2,"price":200}]},{"title":"Проемы, двери, окна","items":[{"name":"Вырезка проемов и усиление","desc":"","qty":1,"price":110000},{"name":"Установка дверных блоков","desc":"","qty":2,"price":1010000},{"name":"Установка оконных блоков и откосов","desc":"","qty":1221,"price":1000}]},{"title":"Санузлы и сантехника","items":[{"name":"Водоснабжение и канализация черновые","desc":"","qty":2,"price":200},{"name":"Установка сантехники (унитазы, раковины, души)","desc":"","qty":2,"price":200},{"name":"Облицовка плиткой (стены/пол)","desc":"","qty":0,"price":2000}]},{"title":"Электрика","items":[{"name":"Кабельные лотки и черновая разводка","desc":"","qty":12,"price":19000},{"name":"Распределительные щиты, автоматы, слаботочка","desc":"","qty":12,"price":1000},{"name":"Розетки, выключатели, точки освещения","desc":"","qty":12,"price":109000},{"name":"Установка светильников","desc":"","qty":12,"price":1000}]},{"title":"Вентиляция и кондиционирование","items":[{"name":"Воздуховоды и решетки","desc":"","qty":12,"price":1000},{"name":"Установка кондиционеров / вентиляционных установок","desc":"","qty":0,"price":1000},{"name":"Пусконаладочные работы","desc":"","qty":21,"price":1000}]},{"title":"Завершение","items":[{"name":"Финальная уборка","desc":"","qty":12,"price":1000},{"name":"Контроль качества и сдача","desc":"","qty":21,"price":200}]}],"equipment_fitout":[{"title":"Из России","items":[{"name":"Комиссия","desc":"","qty":1,"price":1000000},{"name":"Напольное покрытие","desc":"46,08 кв.м","qty":1,"price":2460000},{"name":"Лазертаг комната","desc":"78 кв.м","qty":1,"price":1413000},{"name":"Мишени","desc":"33 шт","qty":1,"price":844000},{"name":"Баскетбол","desc":"4 шт","qty":1,"price":913500},{"name":"Скалодром","desc":"12 кв.м","qty":1,"price":947880},{"name":"Грабер","desc":"","qty":1,"price":72000},{"name":"XOX","desc":"","qty":1,"price":171000},{"name":"Тап Волл","desc":"","qty":1,"price":153000},{"name":"Тап Тейбл","desc":"","qty":1,"price":162000},{"name":"Стоп Тайм","desc":"","qty":1,"price":36000},{"name":"Фризби","desc":"","qty":1,"price":144000},{"name":"Дартс с мячиками","desc":"","qty":1,"price":180000}]}],"equipment_furniture":[{"title":"","items":[{"name":"Ресепшн","desc":"","qty":1,"price":180000},{"name":"Стол","desc":"","qty":1,"price":45000}]}],"equipment_tech":[{"title":"","items":[{"name":"Компьютер","desc":"","qty":1,"price":45000}]}],"equipment_extra":[{"title":"","items":[{"name":"Пожарная система","desc":"","qty":10,"price":180000}]}],"equipment_delivery":[{"title":"","items":[{"name":"","desc":"","qty":0,"price":0}]}]};
-
-  // Detect browser language and choose appropriate default data
-  const browserLang = navigator.language || navigator.userLanguage;
-  const isRussian = browserLang.toLowerCase().startsWith('ru');
-  const DEFAULT_DATA = isRussian ? DEFAULT_DATA_RU : DEFAULT_DATA_EN;
-
-  // Load - check if data exists and is not empty
-  const savedData = localStorage.getItem(LS_KEY);
-  let dataToLoad = DEFAULT_DATA;
-  
-  if (savedData) {
+  // Load default data from external JSON files
+  async function loadDefaultData() {
+    // Detect browser language
+    const browserLang = navigator.language || navigator.userLanguage;
+    const isRussian = browserLang.toLowerCase().startsWith('ru');
+    
+    // Choose appropriate JSON file
+    const jsonFile = isRussian ? 'Russia-Moscow_export.json' : 'USA-Miami_export.json';
+    
     try {
-      const parsed = JSON.parse(savedData);
-      // Check if saved data has actual content (not empty project)
-      if (parsed.meta && parsed.meta.projectName && parsed.meta.projectName.trim() !== '') {
-        dataToLoad = parsed;
-      } else {
-        // If empty, use default data and save it
-        localStorage.setItem(LS_KEY, JSON.stringify(DEFAULT_DATA));
-      }
+      const response = await fetch(jsonFile);
+      if (!response.ok) throw new Error('Failed to load default data');
+      return await response.json();
     } catch(e) {
-      // If parse error, use default
-      localStorage.setItem(LS_KEY, JSON.stringify(DEFAULT_DATA));
+      console.error('Error loading default data:', e);
+      // Fallback to empty structure
+      return {
+        meta: { 
+          lang: isRussian ? 'ru' : 'en', 
+          projectName: '', 
+          currency: isRussian ? '₽' : '$', 
+          taxPercent: 0, 
+          contingencyPercent: 0, 
+          version: 6 
+        }
+      };
     }
-  } else {
-    // No saved data, save default
-    localStorage.setItem(LS_KEY, JSON.stringify(DEFAULT_DATA));
   }
-  
-  loadFromData(dataToLoad);
+
+  // Initialize data loading
+  (async function initData() {
+    const savedData = localStorage.getItem(LS_KEY);
+    let dataToLoad;
+    
+    if (savedData) {
+      try {
+        const parsed = JSON.parse(savedData);
+        // Check if saved data has actual content (not empty project)
+        if (parsed.meta && parsed.meta.projectName && parsed.meta.projectName.trim() !== '') {
+          dataToLoad = parsed;
+        } else {
+          // If empty, load default data from JSON file
+          dataToLoad = await loadDefaultData();
+          localStorage.setItem(LS_KEY, JSON.stringify(dataToLoad));
+        }
+      } catch(e) {
+        // If parse error, load default
+        dataToLoad = await loadDefaultData();
+        localStorage.setItem(LS_KEY, JSON.stringify(dataToLoad));
+      }
+    } else {
+      // No saved data, load default from JSON file
+      dataToLoad = await loadDefaultData();
+      localStorage.setItem(LS_KEY, JSON.stringify(dataToLoad));
+    }
+    
+    loadFromData(dataToLoad);
+  })();
 
   // Tab-close warn on dirty edits
   let __dirty_since_save = false;
