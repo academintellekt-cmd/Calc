@@ -649,24 +649,10 @@
     if(confirm(els.langSel.value==='ru'?'Очистить все данные?':'Clear all data?')){
       localStorage.removeItem(LS_KEY);
       // Load data based on currently selected language
-      const isRu = els.langSel.value === 'ru';
-      const jsonFile = isRu ? 'Russia-Moscow_export.json' : 'USA-Miami_export.json';
-      try {
-        const response = await fetch(jsonFile);
-        if (response.ok) {
-          const data = await response.json();
-          localStorage.setItem(LS_KEY, JSON.stringify(data));
-          loadFromData(data);
-        } else {
-          throw new Error('Failed to fetch');
-        }
-      } catch(e) {
-        console.warn('Error loading from JSON, using embedded fallback data');
-        // Use embedded fallback data for local file:// usage
-        const data = isRu ? FALLBACK_DATA_RU : FALLBACK_DATA_EN;
-        localStorage.setItem(LS_KEY, JSON.stringify(data));
-        loadFromData(data);
-      }
+      const currentLang = els.langSel.value; // 'ru' or 'en'
+      const data = await loadDefaultData(currentLang);
+      localStorage.setItem(LS_KEY, JSON.stringify(data));
+      loadFromData(data);
     }
   });
 
@@ -723,11 +709,10 @@
 
   const FALLBACK_DATA_RU = {"meta":{"lang":"ru","projectName":"Парк Москва","currency":"₽","taxPercent":20,"contingencyPercent":10,"version":6},"construction":[{"title":"Подготовка и демонтаж","items":[{"name":"Подготовительные работы, защита и вывоз мусора","desc":"","qty":1,"price":11},{"name":"Демонтаж перегородок, отделки, полов, потолков","desc":"","qty":2,"price":22},{"name":"Демонтаж инженерных систем (кабели, трубы, оборудование)","desc":"","qty":1,"price":22}]},{"title":"Перегородки и стены","items":[{"name":"Каркас и металлические профили","desc":"","qty":2,"price":222},{"name":"Акустическая / теплоизоляция","desc":"","qty":22,"price":22},{"name":"Обшивка гипсокартоном (1–2 слоя)","desc":"","qty":1,"price":1},{"name":"Штукатурка, шпаклевка, грунтовка","desc":"","qty":1,"price":1},{"name":"Финишная отделка (обои / покраска / панели)","desc":"","qty":1,"price":1}]},{"title":"Потолки","items":[{"name":"Подвесные потолки (гипсокартон / грильято)","desc":"","qty":1,"price":11},{"name":"Натяжные потолки","desc":"","qty":2,"price":2},{"name":"Шпаклевка и покраска","desc":"","qty":2,"price":2}]},{"title":"Полы","items":[{"name":"Стяжка и выравнивание","desc":"","qty":2,"price":2},{"name":"Гидроизоляция и звукоизоляция","desc":"","qty":2,"price":0},{"name":"Финишное покрытие (плитка, ламинат, винил, ковролин)","desc":"","qty":2,"price":2},{"name":"Плинтусы и пороги","desc":"","qty":2,"price":2}]},{"title":"Проемы, двери, окна","items":[{"name":"Вырезка проемов и усиление","desc":"","qty":1,"price":1221},{"name":"Установка дверных блоков","desc":"","qty":2,"price":11212},{"name":"Установка оконных блоков и откосов","desc":"","qty":1221,"price":12}]},{"title":"Санузлы и сантехника","items":[{"name":"Водоснабжение и канализация черновые","desc":"","qty":2,"price":2},{"name":"Установка сантехники (унитазы, раковины, души)","desc":"","qty":2,"price":2},{"name":"Облицовка плиткой (стены/пол)","desc":"","qty":0,"price":22}]},{"title":"Электрика","items":[{"name":"Кабельные лотки и черновая разводка","desc":"","qty":12,"price":212},{"name":"Распределительные щиты, автоматы, слаботочка","desc":"","qty":12,"price":12},{"name":"Розетки, выключатели, точки освещения","desc":"","qty":12,"price":1212},{"name":"Установка светильников","desc":"","qty":12,"price":12}]},{"title":"Вентиляция и кондиционирование","items":[{"name":"Воздуховоды и решетки","desc":"","qty":12,"price":12},{"name":"Установка кондиционеров / вентиляционных установок","desc":"","qty":0,"price":12},{"name":"Пусконаладочные работы","desc":"","qty":21,"price":12}]},{"title":"Завершение","items":[{"name":"Финальная уборка","desc":"","qty":12,"price":12},{"name":"Контроль качества и сдача","desc":"","qty":21,"price":2}]}],"equipment_fitout":[{"title":"Из России","items":[{"name":"Комиссия","desc":"","qty":1,"price":11000},{"name":"Напольное покрытие","desc":"46,08","qty":1,"price":27340},{"name":"Лазертаг комната","desc":"78","qty":1,"price":15700},{"name":"Мишени","desc":"33","qty":1,"price":9380},{"name":"Баскетбол","desc":"4","qty":1,"price":10150},{"name":"Скалодром","desc":"12","qty":1,"price":10532},{"name":"Грабер","desc":"","qty":1,"price":800},{"name":"XOX","desc":"","qty":1,"price":1900},{"name":"Тап Волл","desc":"","qty":1,"price":1700},{"name":"Тап Тейбл","desc":"","qty":1,"price":1800},{"name":"Стоп Тайм","desc":"","qty":1,"price":400},{"name":"Фризби","desc":"","qty":1,"price":1600},{"name":"Дартс с мячиками","desc":"","qty":1,"price":2000}]}],"equipment_furniture":[{"title":"","items":[{"name":"Ресепшн","desc":"","qty":1,"price":2000},{"name":"Стол","desc":"","qty":1,"price":500}]}],"equipment_tech":[{"title":"","items":[{"name":"Компьютер","desc":"","qty":1,"price":500}]}],"equipment_extra":[{"title":"","items":[{"name":"Пожарная система","desc":"","qty":10,"price":2000}]}],"equipment_delivery":[{"title":"","items":[{"name":"","desc":"","qty":0,"price":0}]}]};
 
-  // Load default data from external JSON files
-  async function loadDefaultData() {
-    // Detect browser language
-    const browserLang = navigator.language || navigator.userLanguage;
-    const isRussian = browserLang.toLowerCase().startsWith('ru');
+  // Load default data from external JSON files (default: English)
+  async function loadDefaultData(preferredLang = 'en') {
+    // Use provided language preference, default to English
+    const isRussian = preferredLang === 'ru';
     
     // Choose appropriate JSON file
     const jsonFile = isRussian ? 'Russia-Moscow_export.json' : 'USA-Miami_export.json';
@@ -755,18 +740,18 @@
         if (parsed.meta && parsed.meta.projectName && parsed.meta.projectName.trim() !== '') {
           dataToLoad = parsed;
         } else {
-          // If empty, load default data from JSON file
-          dataToLoad = await loadDefaultData();
+          // If empty, load default data (English by default)
+          dataToLoad = await loadDefaultData('en');
           localStorage.setItem(LS_KEY, JSON.stringify(dataToLoad));
         }
       } catch(e) {
-        // If parse error, load default
-        dataToLoad = await loadDefaultData();
+        // If parse error, load default (English)
+        dataToLoad = await loadDefaultData('en');
         localStorage.setItem(LS_KEY, JSON.stringify(dataToLoad));
       }
     } else {
-      // No saved data, load default from JSON file
-      dataToLoad = await loadDefaultData();
+      // No saved data, load default (English by default)
+      dataToLoad = await loadDefaultData('en');
       localStorage.setItem(LS_KEY, JSON.stringify(dataToLoad));
     }
     
