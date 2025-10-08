@@ -395,7 +395,13 @@
   };
 
   const LS_KEY = 'us_park_calc_v6';
-  function money(v){const cur=els.currency.value||'$';if(!isFinite(v))v=0;return cur+Intl.NumberFormat('en-US',{maximumFractionDigits:2}).format(v)}
+  function money(v){
+    const cur=els.currency.value||'$';
+    if(!isFinite(v))v=0;
+    // Use appropriate locale based on selected language
+    const locale = els.langSel.value === 'ru' ? 'ru-RU' : 'en-US';
+    return cur+Intl.NumberFormat(locale,{maximumFractionDigits:2,minimumFractionDigits:0}).format(v);
+  }
   const toNum=v=>{const n=parseFloat(v);return isFinite(n)?n:0}
   function autoresizeTA(ta){ta.style.height='auto';ta.style.height=ta.scrollHeight+'px'}
 
