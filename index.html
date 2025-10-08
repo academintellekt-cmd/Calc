@@ -639,10 +639,24 @@
     r.readAsText(f);
   });
   els.printBtn.addEventListener('click', ()=> window.print());
-  els.clearAll.addEventListener('click', ()=>{
+  els.clearAll.addEventListener('click', async ()=>{
     if(confirm(els.langSel.value==='ru'?'Очистить все данные?':'Clear all data?')){
       localStorage.removeItem(LS_KEY);
-      loadFromData({});
+      // Load data based on currently selected language
+      const jsonFile = els.langSel.value === 'ru' ? 'Russia-Moscow_export.json' : 'USA-Miami_export.json';
+      try {
+        const response = await fetch(jsonFile);
+        if (response.ok) {
+          const data = await response.json();
+          localStorage.setItem(LS_KEY, JSON.stringify(data));
+          loadFromData(data);
+        } else {
+          loadFromData({});
+        }
+      } catch(e) {
+        console.error('Error loading default data:', e);
+        loadFromData({});
+      }
     }
   });
 
