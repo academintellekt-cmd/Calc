@@ -656,17 +656,32 @@
     }
   });
 
-  els.langSel.addEventListener('change', ()=>{
+  els.langSel.addEventListener('change', async ()=>{
     const newLang = els.langSel.value;
+    
+    // Check if current data is default template (USA-Miami or Парк Москва)
+    const currentProjectName = els.projectName.value.trim();
+    const isDefaultData = currentProjectName === 'USA-Miami' || currentProjectName === 'Парк Москва' || currentProjectName === '';
+    
     // Auto-change currency based on language
     if (newLang === 'ru') {
       els.currency.value = '₽';
     } else if (newLang === 'en') {
       els.currency.value = '$';
     }
+    
     applyLang();
-    recalc();
-    autosave();
+    
+    // If using default template data, auto-load data for new language
+    if (isDefaultData) {
+      const data = await loadDefaultData(newLang);
+      localStorage.setItem(LS_KEY, JSON.stringify(data));
+      loadFromData(data);
+    } else {
+      // User has custom data, just recalc with new formatting
+      recalc();
+      autosave();
+    }
   });
 
   // Init (migrate old localStorage if exists)
