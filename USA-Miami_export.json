@@ -1,0 +1,380 @@
+{
+  "meta": {
+    "lang": "en",
+    "projectName": "USA-Miami",
+    "currency": "$",
+    "taxPercent": 10,
+    "contingencyPercent": 5,
+    "version": 6
+  },
+  "construction": [
+    {
+      "title": "Preparation & Demolition",
+      "items": [
+        {
+          "name": "Preparatory works, protection & debris removal",
+          "desc": "",
+          "qty": 1,
+          "price": 11
+        },
+        {
+          "name": "Demolition of partitions, finishes, floors, ceilings",
+          "desc": "",
+          "qty": 2,
+          "price": 22
+        },
+        {
+          "name": "Demolition of MEP (cables, pipes, equipment)",
+          "desc": "",
+          "qty": 1,
+          "price": 22
+        }
+      ]
+    },
+    {
+      "title": "Partitions & Walls",
+      "items": [
+        {
+          "name": "Framing & metal studs",
+          "desc": "",
+          "qty": 2,
+          "price": 222
+        },
+        {
+          "name": "Acoustic / thermal insulation",
+          "desc": "",
+          "qty": 22,
+          "price": 22
+        },
+        {
+          "name": "Drywall sheathing (1–2 layers)",
+          "desc": "",
+          "qty": 1,
+          "price": 1
+        },
+        {
+          "name": "Plastering, skim coat, priming",
+          "desc": "",
+          "qty": 1,
+          "price": 1
+        },
+        {
+          "name": "Finish (wallpaper / paint / panels)",
+          "desc": "",
+          "qty": 1,
+          "price": 1
+        }
+      ]
+    },
+    {
+      "title": "Ceilings",
+      "items": [
+        {
+          "name": "Suspended ceilings (drywall / grid / grilyato)",
+          "desc": "",
+          "qty": 1,
+          "price": 11
+        },
+        {
+          "name": "Stretch ceilings",
+          "desc": "",
+          "qty": 2,
+          "price": 2
+        },
+        {
+          "name": "Skim coat & painting",
+          "desc": "",
+          "qty": 2,
+          "price": 2
+        }
+      ]
+    },
+    {
+      "title": "Floors",
+      "items": [
+        {
+          "name": "Screed & leveling",
+          "desc": "",
+          "qty": 2,
+          "price": 2
+        },
+        {
+          "name": "Waterproofing & sound insulation",
+          "desc": "",
+          "qty": 2,
+          "price": 0
+        },
+        {
+          "name": "Finish flooring (tile, laminate, vinyl, carpet, etc.)",
+          "desc": "",
+          "qty": 2,
+          "price": 2
+        },
+        {
+          "name": "Baseboards & thresholds",
+          "desc": "",
+          "qty": 2,
+          "price": 2
+        }
+      ]
+    },
+    {
+      "title": "Openings, Doors, Windows",
+      "items": [
+        {
+          "name": "Openings cutting & reinforcement",
+          "desc": "",
+          "qty": 1,
+          "price": 1221
+        },
+        {
+          "name": "Door blocks installation",
+          "desc": "",
+          "qty": 2,
+          "price": 11212
+        },
+        {
+          "name": "Window blocks & jambs installation",
+          "desc": "",
+          "qty": 1221,
+          "price": 12
+        }
+      ]
+    },
+    {
+      "title": "Restrooms & Plumbing",
+      "items": [
+        {
+          "name": "Water supply & drainage rough-in",
+          "desc": "",
+          "qty": 2,
+          "price": 2
+        },
+        {
+          "name": "Plumbing fixtures installation (toilets, sinks, showers)",
+          "desc": "",
+          "qty": 2,
+          "price": 2
+        },
+        {
+          "name": "Tiling (walls/floor)",
+          "desc": "",
+          "qty": 0,
+          "price": 22
+        }
+      ]
+    },
+    {
+      "title": "Electrical",
+      "items": [
+        {
+          "name": "Cable trays & rough-in",
+          "desc": "",
+          "qty": 12,
+          "price": 212
+        },
+        {
+          "name": "Panelboard, breakers, low-voltage",
+          "desc": "",
+          "qty": 12,
+          "price": 12
+        },
+        {
+          "name": "Outlets, switches, lighting points",
+          "desc": "",
+          "qty": 12,
+          "price": 1212
+        },
+        {
+          "name": "Light fixtures installation",
+          "desc": "",
+          "qty": 12,
+          "price": 12
+        }
+      ]
+    },
+    {
+      "title": "HVAC",
+      "items": [
+        {
+          "name": "Ductwork & grilles",
+          "desc": "",
+          "qty": 12,
+          "price": 12
+        },
+        {
+          "name": "AC / ventilation units installation",
+          "desc": "",
+          "qty": 0,
+          "price": 12
+        },
+        {
+          "name": "Commissioning",
+          "desc": "",
+          "qty": 21,
+          "price": 12
+        }
+      ]
+    },
+    {
+      "title": "Closeout",
+      "items": [
+        {
+          "name": "Final cleaning",
+          "desc": "",
+          "qty": 12,
+          "price": 12
+        },
+        {
+          "name": "QA/QC and handover",
+          "desc": "",
+          "qty": 21,
+          "price": 2
+        }
+      ]
+    }
+  ],
+  "equipment_fitout": [
+    {
+      "title": "from Russia",
+      "items": [
+        {
+          "name": "Fee",
+          "desc": "",
+          "qty": 1,
+          "price": 11000
+        },
+        {
+          "name": "Floor",
+          "desc": "46,08",
+          "qty": 1,
+          "price": 27340
+        },
+        {
+          "name": "Lizer room",
+          "desc": "78",
+          "qty": 1,
+          "price": 15700
+        },
+        {
+          "name": "Ttargets",
+          "desc": "33",
+          "qty": 1,
+          "price": 9380
+        },
+        {
+          "name": "Bsketball",
+          "desc": "4",
+          "qty": 1,
+          "price": 10150
+        },
+        {
+          "name": "Climbing Game",
+          "desc": "12",
+          "qty": 1,
+          "price": 10532
+        },
+        {
+          "name": "Graber",
+          "desc": "",
+          "qty": 1,
+          "price": 800
+        },
+        {
+          "name": "XOX",
+          "desc": "",
+          "qty": 1,
+          "price": 1900
+        },
+        {
+          "name": "Tap Wall",
+          "desc": "",
+          "qty": 1,
+          "price": 1700
+        },
+        {
+          "name": "Tap Table",
+          "desc": "",
+          "qty": 1,
+          "price": 1800
+        },
+        {
+          "name": "Stop Time",
+          "desc": "",
+          "qty": 1,
+          "price": 400
+        },
+        {
+          "name": "Frezzbe",
+          "desc": "",
+          "qty": 1,
+          "price": 1600
+        },
+        {
+          "name": "Balls Darts",
+          "desc": "",
+          "qty": 1,
+          "price": 2000
+        }
+      ]
+    }
+  ],
+  "equipment_furniture": [
+    {
+      "title": "",
+      "items": [
+        {
+          "name": "Reseprion",
+          "desc": "",
+          "qty": 1,
+          "price": 2000
+        },
+        {
+          "name": "Table",
+          "desc": "",
+          "qty": 1,
+          "price": 500
+        }
+      ]
+    }
+  ],
+  "equipment_tech": [
+    {
+      "title": "",
+      "items": [
+        {
+          "name": "Computer",
+          "desc": "",
+          "qty": 1,
+          "price": 500
+        }
+      ]
+    }
+  ],
+  "equipment_extra": [
+    {
+      "title": "",
+      "items": [
+        {
+          "name": "Fire System",
+          "desc": "",
+          "qty": 10,
+          "price": 2000
+        }
+      ]
+    }
+  ],
+  "equipment_delivery": [
+    {
+      "title": "",
+      "items": [
+        {
+          "name": "",
+          "desc": "",
+          "qty": 0,
+          "price": 0
+        }
+      ]
+    }
+  ]
+}

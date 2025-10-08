@@ -1,0 +1,813 @@
+html = r"""<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CAPEX Calculator — v6</title>
+<style>
+  :root{
+    --bg:#0b0c10;
+    --card:#111317;
+    --muted:#aab0b9;
+    --text:#e9edf2;
+    --accent:#45aaf2;
+    --secondary:#1a1f27;
+    --danger:#ff4757;
+    --warn:#ffa502;
+    --border:#1d2026;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:#0e1116;color:var(--text);font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,'Helvetica Neue',Arial;}
+  .container{max-width:1320px;margin:32px auto;padding:0 16px 64px;}
+  .grid{display:grid;grid-template-columns:1fr;gap:16px;}
+  @media (min-width:1080px){.grid{grid-template-columns:2fr 1fr;}}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,.35);}
+  .card .head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:space-between}
+  .card .body{padding:16px 20px}
+  .title{font-weight:700;font-size:18px;letter-spacing:.2px;}
+  .muted{color:var(--muted)}
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  .row>.field{flex:1 1 160px}
+  .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;}
+  .input, select, textarea{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:#0b0e13;color:var(--text);outline:none;}
+  .input:focus, select:focus, textarea:focus{border-color:#3a88c8;box-shadow:0 0 0 3px rgba(58,136,200,.15);}
+  textarea{resize:vertical;min-height:38px}
+  button{appearance:none;border:1px solid var(--border);background:var(--secondary);color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:600}
+  button:hover{filter:brightness(1.08)}
+  .btn-secondary{background:var(--secondary)}
+  .btn-danger{background:linear-gradient(135deg,var(--danger),#ff6b81);border-color:transparent;color:#12070a}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap}
+  table{width:100%;border-collapse:collapse;table-layout:auto}
+  th, td{border-bottom:1px solid var(--border);padding:8px;vertical-align:top;text-align:left;}
+  thead th{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.6px}
+  tfoot td{font-weight:700}
+  .right{text-align:right}.center{text-align:center}.nowrap{white-space:nowrap}
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#0b0e13;border:1px solid var(--border);color:var(--muted);font-size:12px}
+  .divider{height:1px;background:var(--border);margin:16px 0}
+  .sticky-summary{position:sticky;top:16px}
+  .total-box{background:linear-gradient(135deg,#0b0e13,#0e151d);border:1px solid var(--border);padding:12px 14px;border-radius:12px;margin-top:8px}
+  .total-box .line{display:flex;justify-content:space-between;margin:8px 0}
+  .total-box .line span:first-child{color:var(--muted)}
+  .grand{font-size:18px;font-weight:800}
+  .category-header{display:flex;align-items:center;gap:8px;justify-content:space-between;margin:6px 0 8px}
+  .del{background:transparent;border-color:var(--danger);color:#ff6b81}
+  .hint{font-size:12px;color:var(--muted)}
+  .row-actions button{padding:6px 10px;font-weight:600}
+  .lang-switch{display:flex;gap:6px;align-items:center}
+  .lang-switch select{background:#0b0e13;border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px 10px}
+
+  /* Remove number input spinners */
+  input[type=number]::-webkit-outer-spin-button,
+  input[type=number]::-webkit-inner-spin-button{ -webkit-appearance: none; margin: 0; }
+  input[type=number]{ -moz-appearance: textfield; }
+
+  /* Auto-grow textareas in tables */
+  .equip-table textarea.input,
+  .category-header .sec-title{
+    overflow:hidden;
+    resize:none;
+    width:100%;
+    line-height:1.2;
+  }
+  .equip-table .field, .category-header .field { align-self: flex-start; }
+
+  @media print{
+    body{background:white;color:black}
+    .card{box-shadow:none;border-color:#ccc}
+    button,.toolbar{display:none!important}
+    .sticky-summary{position:static}
+    .input, select, textarea{border-color:#bbb}
+    a{color:black;text-decoration:none}
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="head">
+        <div class="title" data-i18n="app_title">Калькулятор CAPEX — v6</div>
+        <div class="lang-switch">
+          <span class="muted" data-i18n="language">Язык</span>
+          <select id="lang">
+            <option value="ru">Русский</option>
+            <option value="en">English</option>
+          </select>
+          <span class="pill" id="autosaveStatus" data-i18n="autosave_on">Автосохранение: вкл</span>
+        </div>
+      </div>
+      <div class="body">
+        <div class="row">
+          <div class="field">
+            <label data-i18n="project_name">Название проекта</label>
+            <input class="input" id="projectName" placeholder="Park USA, Austin TX" />
+          </div>
+          <div class="field">
+            <label data-i18n="currency">Валюта (символ)</label>
+            <input class="input" id="currency" maxlength="6" value="$" />
+          </div>
+          <div class="field">
+            <label data-i18n="tax">Налог, % (опц.)</label>
+            <input class="input" id="taxPercent" type="number" step="0.01" min="0" placeholder="0 или 8.25" />
+          </div>
+          <div class="field">
+            <label data-i18n="cont">Резерв/непредвиденные, % (опц.)</label>
+            <input class="input" id="contingencyPercent" type="number" step="0.01" min="0" placeholder="10" />
+          </div>
+        </div>
+        <div class="toolbar" style="margin-top:10px">
+          <button class="btn-secondary" id="exportJson" data-i18n="export">Экспорт JSON</button>
+          <input type="file" id="importFile" style="display:none" accept="application/json" />
+          <button class="btn-secondary" id="importJson" data-i18n="import">Импорт JSON</button>
+          <button class="btn-secondary" id="saveHtml" data-i18n="save_html">Сохранить файл (.html)</button>
+          <button class="btn-secondary" id="printBtn" data-i18n="print">Печать / PDF</button>
+          <button id="clearAll" class="del" data-i18n="clear">Очистить всё</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="col">
+        <!-- Construction (now section-based like Equipment) -->
+        <div class="card" id="constructionCard">
+          <div class="head">
+            <div class="title" data-i18n="construction_title">Строительные работы</div>
+            <div class="toolbar">
+              <button class="btn-secondary" id="addConstructionSection" data-i18n="add_section">+ Раздел</button>
+              <input type="file" id="importConstructionFile" accept="application/json" style="display:none">
+              <button class="btn-secondary" id="importConstructionJson" data-i18n="import_sec">Импорт JSON</button>
+              <button class="btn-secondary" id="exportConstructionJson" data-i18n="export_sec">Экспорт JSON</button>
+            </div>
+          </div>
+          <div class="body" id="constructionSections"></div>
+          <div class="body" style="padding-top:0">
+            <div class="divider"></div>
+            <div class="row" style="justify-content:flex-end">
+              <div class="field" style="width:240px">
+                <label data-i18n="total_construction">Итого (Construction):</label>
+                <div id="constructionTotal" class="input" style="pointer-events:none">$0</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Equipment-like categories -->
+        <div class="card" id="fitoutCard">
+          <div class="head">
+            <div class="title" data-i18n="equip_title">Оборудование</div>
+            <div class="toolbar">
+              <button class="btn-secondary" id="addFitOutSection" data-i18n="add_section">+ Раздел</button>
+              <input type="file" id="importFitOutFile" accept="application/json" style="display:none">
+              <button class="btn-secondary" id="importFitOutJson" data-i18n="import_sec">Импорт JSON</button>
+              <button class="btn-secondary" id="exportFitOutJson" data-i18n="export_sec">Экспорт JSON</button>
+            </div>
+          </div>
+          <div class="body" id="fitoutSections"></div>
+        </div>
+
+        <div class="card" id="furnitureCard">
+          <div class="head">
+            <div class="title" data-i18n="furniture_title">Мебель</div>
+            <div class="toolbar">
+              <button class="btn-secondary" id="addFurnitureSection" data-i18n="add_section">+ Раздел</button>
+              <input type="file" id="importFurnitureFile" accept="application/json" style="display:none">
+              <button class="btn-secondary" id="importFurnitureJson" data-i18n="import_sec">Импорт JSON</button>
+              <button class="btn-secondary" id="exportFurnitureJson" data-i18n="export_sec">Экспорт JSON</button>
+            </div>
+          </div>
+          <div class="body" id="furnitureSections"></div>
+        </div>
+
+        <div class="card" id="techCard">
+          <div class="head">
+            <div class="title" data-i18n="tech_title">Техника</div>
+            <div class="toolbar">
+              <button class="btn-secondary" id="addTechSection" data-i18n="add_section">+ Раздел</button>
+              <input type="file" id="importTechFile" accept="application/json" style="display:none">
+              <button class="btn-secondary" id="importTechJson" data-i18n="import_sec">Импорт JSON</button>
+              <button class="btn-secondary" id="exportTechJson" data-i18n="export_sec">Экспорт JSON</button>
+            </div>
+          </div>
+          <div class="body" id="techSections"></div>
+        </div>
+
+        <div class="card" id="extraCard">
+          <div class="head">
+            <div class="title" data-i18n="extra_title">Дополнительное оборудование</div>
+            <div class="toolbar">
+              <button class="btn-secondary" id="addExtraSection" data-i18n="add_section">+ Раздел</button>
+              <input type="file" id="importExtraFile" accept="application/json" style="display:none">
+              <button class="btn-secondary" id="importExtraJson" data-i18n="import_sec">Импорт JSON</button>
+              <button class="btn-secondary" id="exportExtraJson" data-i18n="export_sec">Экспорт JSON</button>
+            </div>
+          </div>
+          <div class="body" id="extraSections"></div>
+        </div>
+
+        <div class="card" id="deliveryCard">
+          <div class="head">
+            <div class="title" data-i18n="delivery_title">Доставка оборудования</div>
+            <div class="toolbar">
+              <button class="btn-secondary" id="addDeliverySection" data-i18n="add_section">+ Раздел</button>
+              <input type="file" id="importDeliveryFile" accept="application/json" style="display:none">
+              <button class="btn-secondary" id="importDeliveryJson" data-i18n="import_sec">Импорт JSON</button>
+              <button class="btn-secondary" id="exportDeliveryJson" data-i18n="export_sec">Экспорт JSON</button>
+            </div>
+          </div>
+          <div class="body" id="deliverySections"></div>
+        </div>
+
+      </div>
+
+      <div class="col">
+        <div class="card sticky-summary">
+          <div class="head"><div class="title" data-i18n="summary">Сводка</div></div>
+          <div class="body">
+            <div class="total-box">
+              <div class="line"><span data-i18n="construction_total_label">Итого Строительные работы</span><strong id="sumConstruction">$0</strong></div>
+              <div class="line"><span data-i18n="equip_total_label">Итого Оборудование</span><strong id="sumFitOut">$0</strong></div>
+              <div class="line"><span data-i18n="furniture_total_label">Итого Мебель</span><strong id="sumFurniture">$0</strong></div>
+              <div class="line"><span data-i18n="tech_total_label">Итого Техника</span><strong id="sumTech">$0</strong></div>
+              <div class="line"><span data-i18n="extra_total_label">Итого Доп. оборудование</span><strong id="sumExtra">$0</strong></div>
+              <div class="line"><span data-i18n="delivery_total_label">Итого Доставка оборудования</span><strong id="sumDelivery">$0</strong></div>
+              <div class="divider"></div>
+              <div class="line"><span data-i18n="subtotal">Промежуточный итог</span><strong id="sumSubtotal">$0</strong></div>
+              <div class="line"><span data-i18n="tax_label">Налог</span><strong id="sumTax">$0</strong></div>
+              <div class="line"><span data-i18n="cont_label">Непредвиденные</span><strong id="sumCont">$0</strong></div>
+              <div class="divider"></div>
+              <div class="line grand"><span data-i18n="grand">Итого к бюджету</span><strong id="sumGrand">$0</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const $ = (s, c=document)=>c.querySelector(s);
+  const $$ = (s, c=document)=>Array.from(c.querySelectorAll(s));
+
+  // i18n
+  const STR = {
+    ru:{
+      app_title:'Калькулятор CAPEX — v6',
+      language:'Язык',
+      autosave_on:'Автосохранение: вкл',
+      project_name:'Название проекта',
+      currency:'Валюта (символ)',
+      tax:'Налог, % (опц.)',
+      cont:'Резерв/непредвиденные, % (опц.)',
+      export:'Экспорт JSON',
+      import:'Импорт JSON',
+      print:'Печать / PDF',
+      clear:'Очистить всё',
+      construction_title:'Строительные работы',
+      add_row:'+ Строка',
+      add_section:'+ Раздел',
+      category:'Категория',
+      rate:'$/sq.ft',
+      area:'Площадь, sq.ft',
+      sum:'Сумма',
+      actions:'Действия',
+      total_construction:'Итого (Construction):',
+      equip_title:'Оборудование',
+      furniture_title:'Мебель',
+      tech_title:'Техника',
+      extra_title:'Дополнительное оборудование',
+      delivery_title:'Доставка оборудования',
+      summary:'Сводка',
+      construction_total_label:'Итого Строительные работы',
+      equip_total_label:'Итого Оборудование',
+      furniture_total_label:'Итого Мебель',
+      tech_total_label:'Итого Техника',
+      extra_total_label:'Итого Доп. оборудование',
+      delivery_total_label:'Итого Доставка оборудования',
+      subtotal:'Промежуточный итог',
+      tax_label:'Налог',
+      cont_label:'Непредвиденные',
+      grand:'Итого к бюджету',
+      name_col:'Подкатегория',
+      desc_col:'Характеристика',
+      qty_col:'Кол-во',
+      price_col:'Цена за ед.',
+      duplicate:'Дублировать',
+      remove:'Удалить',
+      section_name:'Название раздела',
+      section_total:'Итого раздела',
+      import_sec:'Импорт JSON',
+      export_sec:'Экспорт JSON'
+    },
+    en:{
+      app_title:'CAPEX Calculator — v6',
+      language:'Language',
+      autosave_on:'Autosave: on',
+      project_name:'Project name',
+      currency:'Currency (symbol)',
+      tax:'Tax, % (opt.)',
+      cont:'Contingency, % (opt.)',
+      export:'Export JSON',
+      import:'Import JSON',
+      print:'Print / PDF',
+      clear:'Clear all',
+      construction_title:'Construction',
+      add_row:'+ Row',
+      add_section:'+ Section',
+      category:'Category',
+      rate:'$/sq.ft',
+      area:'Area, sq.ft',
+      sum:'Amount',
+      actions:'Actions',
+      total_construction:'Total (Construction):',
+      equip_title:'Equipment',
+      furniture_title:'Furniture',
+      tech_title:'Tech',
+      extra_title:'Additional equipment',
+      delivery_title:'Equipment delivery',
+      summary:'Summary',
+      construction_total_label:'Total Construction',
+      equip_total_label:'Total Equipment',
+      furniture_total_label:'Total Furniture',
+      tech_total_label:'Total Tech',
+      extra_total_label:'Total Additional equipment',
+      delivery_total_label:'Total Equipment delivery',
+      subtotal:'Subtotal',
+      tax_label:'Tax',
+      cont_label:'Contingency',
+      grand:'Grand total',
+      name_col:'Item',
+      desc_col:'Specification',
+      qty_col:'Qty',
+      price_col:'Unit price',
+      duplicate:'Duplicate',
+      remove:'Remove',
+      section_name:'Section name',
+      section_total:'Section total',
+      import_sec:'Import JSON',
+      export_sec:'Export JSON'
+    }
+  };
+
+  const els = {
+    langSel: $('#lang'),
+    projectName: $('#projectName'),
+    currency: $('#currency'),
+    taxPercent: $('#taxPercent'),
+    contingencyPercent: $('#contingencyPercent'),
+
+    // Construction (as sections)
+    constructionSections: $('#constructionSections'),
+    addConstructionSection: $('#addConstructionSection'),
+    constructionTotal: $('#constructionTotal'),
+
+    // Equipment-like
+    fitoutSections: $('#fitoutSections'),
+    furnitureSections: $('#furnitureSections'),
+    techSections: $('#techSections'),
+    extraSections: $('#extraSections'),
+    deliverySections: $('#deliverySections'),
+
+    addFitOutSection: $('#addFitOutSection'),
+    addFurnitureSection: $('#addFurnitureSection'),
+    addTechSection: $('#addTechSection'),
+    addExtraSection: $('#addExtraSection'),
+    addDeliverySection: $('#addDeliverySection'),
+
+    sumConstruction: $('#sumConstruction'),
+    sumFitOut: $('#sumFitOut'),
+    sumFurniture: $('#sumFurniture'),
+    sumTech: $('#sumTech'),
+    sumExtra: $('#sumExtra'),
+    sumDelivery: $('#sumDelivery'),
+    sumSubtotal: $('#sumSubtotal'),
+    sumTax: $('#sumTax'),
+    sumCont: $('#sumCont'),
+    sumGrand: $('#sumGrand'),
+
+    exportJson: $('#exportJson'),
+    importJson: $('#importJson'),
+    importFile: $('#importFile'),
+    printBtn: $('#printBtn'),
+    clearAll: $('#clearAll'),
+    autosaveStatus: $('#autosaveStatus'),
+  };
+
+  const LS_KEY = 'us_park_calc_v6';
+  function money(v){const cur=els.currency.value||'$';if(!isFinite(v))v=0;return cur+Intl.NumberFormat('en-US',{maximumFractionDigits:2}).format(v)}
+  const toNum=v=>{const n=parseFloat(v);return isFinite(n)?n:0}
+  function autoresizeTA(ta){ta.style.height='auto';ta.style.height=ta.scrollHeight+'px'}
+
+  function createSection(container, data={title:'', items:[{name:'',desc:'',qty:'',price:''}]}){
+    const wrap=document.createElement('div');
+    wrap.className='equip-section';
+    wrap.style.marginBottom='18px';
+    wrap.innerHTML=`
+      <div class="category-header">
+        <div class="row" style="flex:1">
+          <div class="field" style="flex:1 1 auto;min-width:220px">
+            <label data-i18n="section_name">${STR[els.langSel.value||'ru'].section_name}</label>
+            <textarea class="input sec-title" rows="1"></textarea>
+          </div>
+          <div class="field" style="width:200px">
+            <label data-i18n="section_total">${STR[els.langSel.value||'ru'].section_total}</label>
+            <div class="input" style="background:#0b0e13;pointer-events:none" data-role="sec-total">$0</div>
+          </div>
+        </div>
+        <div class="toolbar">
+          <button class="btn-secondary removeSection" data-i18n="remove">${STR[els.langSel.value||'ru'].remove}</button>
+        </div>
+      </div>
+      <table class="equip-table">
+        <thead><tr>
+          <th style="width:28%" data-i18n="name_col">${STR[els.langSel.value||'ru'].name_col}</th>
+          <th data-i18n="desc_col">${STR[els.langSel.value||'ru'].desc_col}</th>
+          <th class="right nowrap" style="width:10%" data-i18n="qty_col">${STR[els.langSel.value||'ru'].qty_col}</th>
+          <th class="right nowrap" style="width:16%" data-i18n="price_col">${STR[els.langSel.value||'ru'].price_col}</th>
+          <th class="right nowrap" style="width:16%" data-i18n="sum">${STR[els.langSel.value||'ru'].sum}</th>
+          <th class="center" style="width:12%" data-i18n="actions">${STR[els.langSel.value||'ru'].actions}</th>
+        </tr></thead>
+        <tbody></tbody>
+        <tfoot><tr><td colspan="4" class="right" data-i18n="section_total">${STR[els.langSel.value||'ru'].section_total}:</td><td class="right sec-total-foot">$0</td><td></td></tr></tfoot>
+      </table>
+      <div class="divider"></div>`;
+    container.appendChild(wrap);
+    const tbody=$('tbody',wrap);
+
+    // set title
+    const st = $('.sec-title', wrap);
+    st.value = data.title||'';
+    st.addEventListener('input', ()=>autoresizeTA(st));
+    autoresizeTA(st);
+
+    function addItem(it={name:'',desc:'',qty:'',price:''}){
+      const tr=document.createElement('tr');
+      tr.innerHTML=`
+        <td><textarea class="input name" placeholder="" rows="1"></textarea></td>
+        <td><textarea class="input desc" placeholder="" rows="1"></textarea></td>
+        <td class="right"><input class="input qty" type="number" min="0" step="1"></td>
+        <td class="right"><input class="input price" type="number" min="0" step="0.01"></td>
+        <td class="right subtotal">—</td>
+        <td class="center row-actions">
+          <button class="btn-secondary dup" data-i18n="duplicate">${STR[els.langSel.value||'ru'].duplicate}</button>
+          <button class="del remove" data-i18n="remove">${STR[els.langSel.value||'ru'].remove}</button>
+        </td>`;
+      tbody.appendChild(tr);
+      $('.name',tr).value=it.name||'';
+      $('.desc',tr).value=it.desc||'';
+      $('.qty',tr).value=(it.qty!==undefined&&it.qty!==null)?it.qty:'';
+      $('.price',tr).value=(it.price!==undefined&&it.price!==null)?it.price:'';
+
+      // autoresize
+      ['name','desc'].forEach(cls=>{ const ta=$('.'+cls, tr); ta.addEventListener('input', ()=>autoresizeTA(ta)); autoresizeTA(ta); });
+
+      $$('input',tr).forEach(inp=>inp.addEventListener('input',recalc));
+      $('.remove',tr).addEventListener('click',()=>{ if (tbody.children.length>1){ tr.remove(); recalc(); } else { /* keep at least one row */ $('.name',tr).value=''; $('.desc',tr).value=''; $('.qty',tr).value=''; $('.price',tr).value=''; recalc(); } });
+      $('.dup',tr).addEventListener('click',()=>{
+        const payload={name:$('.name',tr).value,desc:$('.desc',tr).value,qty:$('.qty',tr).value,price:$('.price',tr).value};
+        addItem(payload);
+      });
+      recalc();
+    }
+
+    (data.items && data.items.length ? data.items : [{name:'',desc:'',qty:'',price:''}]).forEach(addItem);
+    $('.removeSection',wrap).addEventListener('click',()=>{
+      const sections = $$('.equip-section', container);
+      if (sections.length>1){ wrap.remove(); recalc(); }
+      else {
+        // keep at least one empty section
+        $('.sec-title',wrap).value='';
+        $('tbody',wrap).innerHTML='';
+        addItem({});
+        recalc();
+      }
+    });
+    recalc();
+  }
+
+  function serializeSections(container){
+    return $$('.equip-section',container).map(sec=>{
+      const items=$$('tbody tr',sec).map(tr=>({name:$('.name',tr).value.trim(),desc:$('.desc',tr).value.trim(),qty:toNum($('.qty',tr).value),price:toNum($('.price',tr).value)}));
+      return{title:$('.sec-title',sec).value.trim(),items};
+    });
+  }
+
+  function recalc(){
+    // Sum helper
+    function sumContainer(container){
+      let total=0;
+      $$('.equip-section',container).forEach(sec=>{
+        let secTotal=0;
+        $$('tbody tr',sec).forEach(tr=>{
+          const qty=toNum($('.qty',tr).value);
+          const price=toNum($('.price',tr).value);
+          const sum=qty*price;
+          $('.subtotal',tr).textContent=money(sum);
+          secTotal+=sum;
+        });
+        $('[data-role="sec-total"]',sec).textContent=money(secTotal);
+        $('.sec-total-foot',sec).textContent=money(secTotal);
+        total+=secTotal;
+      });
+      return total;
+    }
+
+    const constructionTotal = sumContainer(els.constructionSections);
+    const fitoutTotal = sumContainer(els.fitoutSections);
+    const furnitureTotal = sumContainer(els.furnitureSections);
+    const techTotal = sumContainer(els.techSections);
+    const extraTotal = sumContainer(els.extraSections);
+    const deliveryTotal = sumContainer(els.deliverySections);
+
+    els.constructionTotal.textContent=money(constructionTotal);
+
+    // Summary
+    els.sumConstruction.textContent=money(constructionTotal);
+    els.sumFitOut.textContent=money(fitoutTotal);
+    els.sumFurniture.textContent=money(furnitureTotal);
+    els.sumTech.textContent=money(techTotal);
+    els.sumExtra.textContent=money(extraTotal);
+    els.sumDelivery.textContent=money(deliveryTotal);
+
+    const sub = constructionTotal + fitoutTotal + furnitureTotal + techTotal + extraTotal + deliveryTotal;
+    const tax = sub * (toNum(els.taxPercent.value)/100);
+    const cont = sub * (toNum(els.contingencyPercent.value)/100);
+    els.sumSubtotal.textContent=money(sub);
+    els.sumTax.textContent=money(tax);
+    els.sumCont.textContent=money(cont);
+    els.sumGrand.textContent=money(sub+tax+cont);
+
+    autosave();
+  }
+
+  function serialize(){
+    return {
+      meta:{
+        lang: els.langSel.value,
+        projectName: els.projectName.value,
+        currency: els.currency.value || '$',
+        taxPercent: toNum(els.taxPercent.value),
+        contingencyPercent: toNum(els.contingencyPercent.value),
+        version: 6
+      },
+      // New construction format
+      construction: serializeSections(els.constructionSections),
+      equipment_fitout: serializeSections(els.fitoutSections),
+      equipment_furniture: serializeSections(els.furnitureSections),
+      equipment_tech: serializeSections(els.techSections),
+      equipment_extra: serializeSections(els.extraSections),
+      equipment_delivery: serializeSections(els.deliverySections),
+    };
+  }
+
+  function loadSections(container, arr){
+    container.innerHTML='';
+    (arr||[]).forEach(sec=> createSection(container, sec));
+    if($$('.equip-section', container).length===0){ createSection(container, {}); }
+  }
+
+  function loadFromData(data){
+    els.langSel.value = data?.meta?.lang || 'ru';
+    applyLang();
+
+    els.projectName.value = data?.meta?.projectName || '';
+    els.currency.value = data?.meta?.currency || '$';
+    els.taxPercent.value = data?.meta?.taxPercent || '';
+    els.contingencyPercent.value = data?.meta?.contingencyPercent || '';
+
+    loadSections(els.constructionSections, data?.construction);
+    loadSections(els.fitoutSections, data?.equipment_fitout);
+    loadSections(els.furnitureSections, data?.equipment_furniture);
+    loadSections(els.techSections, data?.equipment_tech);
+    loadSections(els.extraSections, data?.equipment_extra);
+    loadSections(els.deliverySections, data?.equipment_delivery);
+
+    recalc();
+  }
+
+  function autosave(){
+    try{
+      localStorage.setItem(LS_KEY, JSON.stringify(serialize()));
+      $('#autosaveStatus').textContent = (els.langSel.value==='ru'?STR.ru.autosave_on:STR.en.autosave_on);
+      $('#autosaveStatus').style.color = '#aab0b9';
+    }catch(e){
+      $('#autosaveStatus').textContent = 'Error autosave';
+      $('#autosaveStatus').style.color = '#ff6b81';
+    }
+  }
+
+  // i18n apply
+  function applyLang(){
+    const lang=els.langSel.value;
+    const dict=STR[lang]||STR.ru;
+    $$('[data-i18n]').forEach(node=>{
+      const key=node.getAttribute('data-i18n');
+      if(dict[key]) node.textContent=dict[key];
+    });
+    document.title = dict.app_title;
+  }
+
+  // Events
+  ['input','change'].forEach(ev=>{
+    [els.projectName,els.currency,els.taxPercent,els.contingencyPercent].forEach(el=>el.addEventListener(ev,recalc));
+  });
+
+  // Add section buttons
+  els.addConstructionSection.addEventListener('click', ()=> createSection(els.constructionSections));
+  els.addFitOutSection.addEventListener('click', ()=> createSection(els.fitoutSections));
+  els.addFurnitureSection.addEventListener('click', ()=> createSection(els.furnitureSections));
+  els.addTechSection.addEventListener('click', ()=> createSection(els.techSections));
+  els.addExtraSection.addEventListener('click', ()=> createSection(els.extraSections));
+  els.addDeliverySection.addEventListener('click', ()=> createSection(els.deliverySections));
+
+  // Export/Import/Print/Clear (whole document)
+  els.exportJson.addEventListener('click', ()=>{
+    const blob = new Blob([JSON.stringify(serialize(), null, 2)], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    const name = (els.projectName.value || 'park_calc').replace(/\\s+/g,'_');
+    a.download = name + '_export.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+  els.importJson.addEventListener('click', ()=> els.importFile.click());
+  els.importFile.addEventListener('change', e=>{
+    const f=e.target.files[0]; if(!f) return;
+    const r=new FileReader();
+    r.onload=()=>{ try{ loadFromData(JSON.parse(r.result)); }catch{ alert('Bad JSON'); } };
+    r.readAsText(f);
+  });
+  els.printBtn.addEventListener('click', ()=> window.print());
+  els.clearAll.addEventListener('click', ()=>{
+    if(confirm(els.langSel.value==='ru'?'Очистить все данные?':'Clear all data?')){
+      localStorage.removeItem(LS_KEY);
+      loadFromData({});
+    }
+  });
+
+  els.langSel.addEventListener('change', ()=>{
+    applyLang();
+    autosave();
+  });
+
+  // Init (migrate old localStorage if exists)
+  (function migrateOld(){
+    // From v5 storage
+    const oldV5 = localStorage.getItem('us_park_calc_v5');
+    if(!localStorage.getItem(LS_KEY) && oldV5){
+      try{
+        const old = JSON.parse(oldV5);
+        // Map old construction rows (rate * area) into one section "Base construction"
+        const constructionItems = (old.construction||[]).map(r=> ({
+          name: r.category || '',
+          desc: `${(r.rate||0)} $/sq.ft × ${(r.area||0)} sq.ft`,
+          qty: 1,
+          price: (r.rate||0) * (r.area||0)
+        }));
+        const mapped = {
+          meta:{
+            lang: old.meta?.lang || 'ru',
+            projectName: old.meta?.projectName || '',
+            currency: old.meta?.currency || '$',
+            taxPercent: old.meta?.taxPercent || 0,
+            contingencyPercent: old.meta?.contingencyPercent || 0,
+            version: 6
+          },
+          construction: constructionItems.length ? [{ title: (old.meta?.lang==='en'?'Construction':'Строительство'), items: constructionItems }] : [],
+          equipment_fitout: old.equipment_fitout || [],
+          equipment_furniture: old.equipment_furniture || [],
+          equipment_tech: old.equipment_tech || [],
+          equipment_extra: old.equipment_extra || [],
+          equipment_delivery: old.equipment_delivery || []
+        };
+        localStorage.setItem(LS_KEY, JSON.stringify(mapped));
+      }catch{}
+    }
+  })();
+
+  // Load
+  loadFromData(JSON.parse(localStorage.getItem(LS_KEY) || '{}'));
+
+  // Tab-close warn on dirty edits
+  let __dirty_since_save = false;
+  function markDirty(){ __dirty_since_save = true; }
+  function markSaved(){ __dirty_since_save = false; }
+  window.addEventListener('beforeunload', (e)=>{
+    if(__dirty_since_save){
+      e.preventDefault();
+      e.returnValue='';
+    }
+  });
+
+  // Observe dynamic inputs to mark dirty
+  (function(){
+    const observeDirty = (root=document)=>{
+      root.querySelectorAll('input, textarea, select').forEach(el=>{
+        el.addEventListener('input', markDirty, {passive:true});
+        el.addEventListener('change', markDirty, {passive:true});
+      });
+    };
+    observeDirty(document);
+    const mo = new MutationObserver(muts=>{
+      muts.forEach(m=>{
+        m.addedNodes && m.addedNodes.forEach(n=>{
+          if(n.nodeType===1) observeDirty(n);
+        });
+      });
+    });
+    mo.observe(document.body, {childList:true, subtree:true});
+  })();
+
+  // Save-as-HTML button (self-contained with current data)
+  function saveAsHTML(){
+    try{
+      const data = serialize();
+      const dataStr = JSON.stringify(data);
+      const inj = `<script>(function(){try{localStorage.setItem('${LS_KEY}', ${JSON.stringify("")}.slice(0,-2)+${JSON.stringify(dataStr)}.slice(1); }catch(e){}})();<\\/script>`;
+      const htmlDoc = document.documentElement.outerHTML.replace('</body>', inj + '\\n</body>');
+      const blob = new Blob([htmlDoc], {type:'text/html;charset=utf-8'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      const name = (els.projectName.value || 'park_calc').replace(/\\s+/g,'_');
+      a.download = name + '_filled.html';
+      a.click();
+      URL.revokeObjectURL(a.href);
+      markSaved();
+    }catch(e){ console.error(e); alert('Save failed'); }
+  }
+  const saveBtn = document.getElementById('saveHtml');
+  if(saveBtn){ saveBtn.addEventListener('click', saveAsHTML); }
+
+  // --- Section-only import/export binders ---
+  function serializeSection(key){
+    switch(key){
+      case 'construction': return { construction: serializeSections(els.constructionSections) };
+      case 'equipment_fitout': return { equipment_fitout: serializeSections(els.fitoutSections) };
+      case 'equipment_furniture': return { equipment_furniture: serializeSections(els.furnitureSections) };
+      case 'equipment_tech': return { equipment_tech: serializeSections(els.techSections) };
+      case 'equipment_extra': return { equipment_extra: serializeSections(els.extraSections) };
+      case 'equipment_delivery': return { equipment_delivery: serializeSections(els.deliverySections) };
+    }
+    return {};
+  }
+  function loadSectionFromObject(key, obj){
+    if(key==='construction'){
+      loadSections(els.constructionSections, obj?.construction);
+    }else if(key==='equipment_fitout'){
+      loadSections(els.fitoutSections, obj?.equipment_fitout);
+    }else if(key==='equipment_furniture'){
+      loadSections(els.furnitureSections, obj?.equipment_furniture);
+    }else if(key==='equipment_tech'){
+      loadSections(els.techSections, obj?.equipment_tech);
+    }else if(key==='equipment_extra'){
+      loadSections(els.extraSections, obj?.equipment_extra);
+    }else if(key==='equipment_delivery'){
+      loadSections(els.deliverySections, obj?.equipment_delivery);
+    }
+    recalc(); markDirty();
+  }
+  function bindSectionIO(humanKey, dataKey){
+    const importBtn = document.getElementById('import'+humanKey+'Json');
+    const importFile = document.getElementById('import'+humanKey+'File');
+    const exportBtn = document.getElementById('export'+humanKey+'Json');
+    if(importBtn && importFile){
+      importBtn.addEventListener('click', ()=> importFile.click());
+      importFile.addEventListener('change', async (e)=>{
+        const f = e.target.files?.[0];
+        if(!f) return;
+        try{
+          const txt = await f.text();
+          const obj = JSON.parse(txt);
+          loadSectionFromObject(dataKey, obj);
+        }catch(err){
+          console.error(err); alert('JSON import failed');
+        }finally{
+          e.target.value='';
+        }
+      });
+    }
+    if(exportBtn){
+      exportBtn.addEventListener('click', ()=>{
+        try{
+          const data = serializeSection(dataKey);
+          const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          const name = (els.projectName.value || 'project').replace(/\\s+/g,'_');
+          a.download = name + '_' + dataKey + '.json';
+          a.click();
+          URL.revokeObjectURL(a.href);
+        }catch(err){ console.error(err); alert('Export failed'); }
+      });
+    }
+  }
+  // Bind for all
+  bindSectionIO('Construction', 'construction');
+  bindSectionIO('FitOut', 'equipment_fitout');
+  bindSectionIO('Furniture', 'equipment_furniture');
+  bindSectionIO('Tech', 'equipment_tech');
+  bindSectionIO('Extra', 'equipment_extra');
+  bindSectionIO('Delivery', 'equipment_delivery');
+
+})();</script>
+</body>
+</html>"""
