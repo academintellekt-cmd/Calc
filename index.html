@@ -453,6 +453,8 @@
   };
 
   const LS_KEY = 'us_park_calc_v6';
+  const TEMPLATE_KEY = LS_KEY + '_template';
+  let __currentTemplateId = null;
   function money(v){
     const cur=els.currency.value||'$';
     if(!isFinite(v))v=0;
@@ -660,7 +662,51 @@
     if($$('.equip-section', container).length===0){ createSection(container, {}); }
   }
 
-  function loadFromData(data){
+  function sectionHasContent(section){
+    if(!section || typeof section !== 'object') return false;
+    if((section.title||'').trim()) return true;
+    if(Array.isArray(section.items)){
+      return section.items.some(item=>{
+        if(!item || typeof item !== 'object') return false;
+        if((item.name||'').trim()) return true;
+        if((item.desc||'').trim()) return true;
+        if(toNum(item.qty)) return true;
+        if(toNum(item.price)) return true;
+        return false;
+      });
+    }
+    return false;
+  }
+
+  function hasMeaningfulContent(data){
+    if(!data || typeof data !== 'object') return false;
+    const meta=data.meta||{};
+    if((meta.projectName||'').trim()) return true;
+    if((meta.currency||'').trim()) return true;
+    if(toNum(meta.taxPercent)) return true;
+    if(toNum(meta.contingencyPercent)) return true;
+    const pools=[
+      data.construction,
+      data.equipment_fitout,
+      data.equipment_furniture,
+      data.equipment_tech,
+      data.equipment_extra,
+      data.equipment_delivery
+    ];
+    return pools.some(arr=>Array.isArray(arr) && arr.some(sectionHasContent));
+  }
+
+  function loadFromData(data, templateId){
+    if(templateId!==undefined){
+      __currentTemplateId = templateId;
+      if(templateId){
+        localStorage.setItem(TEMPLATE_KEY, templateId);
+      }else{
+        localStorage.removeItem(TEMPLATE_KEY);
+      }
+    }else{
+      __currentTemplateId = localStorage.getItem(TEMPLATE_KEY);
+    }
     els.langSel.value = data?.meta?.lang || 'ru';
     applyLang();
 
@@ -677,11 +723,15 @@
     loadSections(els.deliverySections, data?.equipment_delivery);
 
     recalc();
+    markSaved();
   }
 
   function autosave(){
     try{
       localStorage.setItem(LS_KEY, JSON.stringify(serialize()));
+      if(__currentTemplateId){
+        localStorage.setItem(TEMPLATE_KEY, __currentTemplateId);
+      }
       $('#autosaveStatus').textContent = (els.langSel.value==='ru'?STR.ru.autosave_on:STR.en.autosave_on);
       $('#autosaveStatus').style.color = '#aab0b9';
     }catch(e){
@@ -728,7 +778,7 @@
   els.importFile.addEventListener('change', e=>{
     const f=e.target.files[0]; if(!f) return;
     const r=new FileReader();
-    r.onload=()=>{ try{ loadFromData(JSON.parse(r.result)); }catch{ alert('Bad JSON'); } };
+    r.onload=()=>{ try{ loadFromData(JSON.parse(r.result), null); }catch{ alert('Bad JSON'); } };
     r.readAsText(f);
   });
   els.printBtn.addEventListener('click', ()=> window.print());
@@ -739,16 +789,14 @@
       const currentLang = els.langSel.value; // 'ru' or 'en'
       const data = await loadDefaultData(currentLang);
       localStorage.setItem(LS_KEY, JSON.stringify(data));
-      loadFromData(data);
+      loadFromData(data, currentLang==='ru' ? 'ru-default' : 'en-default');
     }
   });
 
   els.langSel.addEventListener('change', async ()=>{
     const newLang = els.langSel.value;
-    
-    // Check if current data is default template (USA-Miami or Парк Москва)
-    const currentProjectName = els.projectName.value.trim();
-    const isDefaultData = currentProjectName === 'USA-Miami' || currentProjectName === 'Парк Москва' || currentProjectName === '';
+
+    const wasTemplate = !!__currentTemplateId;
     
     // Auto-change currency based on language
     if (newLang === 'ru') {
@@ -760,10 +808,10 @@
     applyLang();
     
     // If using default template data, auto-load data for new language
-    if (isDefaultData) {
+    if (wasTemplate) {
       const data = await loadDefaultData(newLang);
       localStorage.setItem(LS_KEY, JSON.stringify(data));
-      loadFromData(data);
+      loadFromData(data, newLang==='ru' ? 'ru-default' : 'en-default');
     } else {
       // User has custom data, just recalc with new formatting
       recalc();
@@ -833,36 +881,43 @@
   // Initialize data loading
   (async function initData() {
     const savedData = localStorage.getItem(LS_KEY);
+    const savedTemplate = localStorage.getItem(TEMPLATE_KEY) || undefined;
     let dataToLoad;
-    
+    let templateForLoad = savedTemplate;
+
     if (savedData) {
       try {
         const parsed = JSON.parse(savedData);
-        // Check if saved data has actual content (not empty project)
-        if (parsed.meta && parsed.meta.projectName && parsed.meta.projectName.trim() !== '') {
+        if (hasMeaningfulContent(parsed)) {
           dataToLoad = parsed;
         } else {
-          // If empty, load default data (English by default)
           dataToLoad = await loadDefaultData('en');
+          templateForLoad = 'en-default';
           localStorage.setItem(LS_KEY, JSON.stringify(dataToLoad));
         }
       } catch(e) {
-        // If parse error, load default (English)
         dataToLoad = await loadDefaultData('en');
+        templateForLoad = 'en-default';
         localStorage.setItem(LS_KEY, JSON.stringify(dataToLoad));
       }
     } else {
-      // No saved data, load default (English by default)
       dataToLoad = await loadDefaultData('en');
+      templateForLoad = 'en-default';
       localStorage.setItem(LS_KEY, JSON.stringify(dataToLoad));
     }
-    
-    loadFromData(dataToLoad);
+
+    loadFromData(dataToLoad, templateForLoad);
   })();
 
   // Tab-close warn on dirty edits
   let __dirty_since_save = false;
-  function markDirty(){ __dirty_since_save = true; }
+  function markDirty(){
+    if(__currentTemplateId){
+      __currentTemplateId = null;
+      localStorage.removeItem(TEMPLATE_KEY);
+    }
+    __dirty_since_save = true;
+  }
   function markSaved(){ __dirty_since_save = false; }
   window.addEventListener('beforeunload', (e)=>{
     if(__dirty_since_save){
